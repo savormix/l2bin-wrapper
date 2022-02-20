@@ -2,7 +2,6 @@ name: Release
 
 on:
   push:
-    branches: [ initial-impl ]
     tags: [ v* ]
 
 env:
@@ -50,36 +49,36 @@ jobs:
         if-no-files-found: error
         retention-days: 1
 
-#  release:
-#    permissions:
-#      contents: write
-#    runs-on: ubuntu-latest
-#
-#    - name: Download Artifact
-#      uses: actions/download-artifact@v2.1.0
-#      with:
-#        name: localhost
-#        path: packages
-#
-#    - name: Download Artifact
-#      uses: actions/download-artifact@v2.1.0
-#      with:
-#        name: l2ini
-#        path: packages
-#
-#    - name: Download Artifact
-#      uses: actions/download-artifact@v2.1.0
-#      with:
-#        name: l2ini_userini
-#        path: packages
-#
-#    - name: Create Release
-#      uses: ncipollo/release-action@v1.9.0
-#      with:
-#        allowUpdates: false
-#        artifactErrorsFailBuild: true
-#        artifacts: packages/*
-#        artifactContentType: application/octet-stream
-#        draft: false
-#        generateReleaseNotes: true
-#        prerelease: false
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: localhost
+        path: packages
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: l2ini
+        path: packages
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: l2ini_userini
+        path: packages
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1.9.0
+      with:
+        allowUpdates: false
+        artifactErrorsFailBuild: true
+        artifacts: packages/*
+        artifactContentType: application/octet-stream
+        draft: false
+        generateReleaseNotes: true
+        prerelease: false

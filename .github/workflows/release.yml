@@ -50,6 +50,7 @@ jobs:
         retention-days: 1
 
   release:
+    needs: [ build ]
     permissions:
       contents: write
     runs-on: ubuntu-latest

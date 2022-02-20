@@ -28,7 +28,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCREATE_VERSION_FILE=true ${{ matrix.customization }}
+        cmake -A Win32 -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCREATE_VERSION_FILE=true ${{ matrix.customization }}
 
     - name: Build
       run: |

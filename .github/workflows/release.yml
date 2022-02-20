@@ -83,14 +83,14 @@ jobs:
         artifactContentType: application/octet-stream
         body: 'Three prebuilt options to choose from:
         
-        - **localhost**: Overrides the Auth Gate address to 127.0.0.1
+        - **localhost**: Overrides the Auth Gate address to `127.0.0.1`
         
-        - **l2ini**: Overrides l2.ini with l2_.ini (you provide l2_.ini; Auth Gate address will be taken from l2_.ini, regardless of launcher)
+        - **l2ini**: Overrides `l2.ini` with `l2_.ini` (you provide `l2_.ini`; Auth Gate address will be taken from `l2_.ini`, regardless of launcher)
         
-        - **l2ini_userini**: Overrides l2.ini with l2_.ini and user.ini with user_.ini (you provide l2_.ini and user_.ini; Auth Gate address will be taken from l2_.ini, regardless of launcher)
+        - **l2ini_userini**: Overrides `l2.ini` with `l2_.ini` and `user.ini` with `user_.ini` (you provide `l2_.ini` and `user_.ini`; Auth Gate address will be taken from l2_.ini, regardless of launcher)
         
         
-        Further usage details can be found in the provided README.md file.
+        Further usage details can be found in the provided `README.md` file.
         '
         draft: false
         generateReleaseNotes: true

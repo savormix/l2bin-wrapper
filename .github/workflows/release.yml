@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  push:
+    tags: [ v* ]
+
+env:
+  BUILD_TYPE: MinSizeRel
+  LIB: "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.19041.0\\um\\x86"
+  PROJECT_NAME: l2bin_wrapper
+
+jobs:
+  build:
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        include:
+        - customization: "-DOVERRIDE_IP=1 -DOVERRIDE_L2INI=0 -DOVERRIDE_USERINI=0"
+          suffix: localhost
+        - customization: "-DOVERRIDE_IP=0 -DOVERRIDE_L2INI=1 -DOVERRIDE_USERINI=0"
+          suffix: l2ini
+        - customization: "-DOVERRIDE_IP=0 -DOVERRIDE_L2INI=1 -DOVERRIDE_USERINI=1"
+          suffix: l2ini_userini
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      run: |
+        cmake -A Win32 -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCREATE_VERSION_FILE=true ${{ matrix.customization }}
+
+    - name: Build
+      run: |
+        cmake --build "${{ github.workspace }}/build" --config ${{ env.BUILD_TYPE }}
+        $ver=$(type "${{ github.workspace }}/build/version.txt")
+        echo "PROJECT_VERSION=$ver" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+
+    - name: Package
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        mv "${{ env.BUILD_TYPE }}/L2.bin" .
+        7z a -bd -sse -stl -tzip "${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}-${{ matrix.suffix }}.zip" L2.bin LICENSE README.md
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: ${{ matrix.suffix }}
+        path: ${{ github.workspace }}/build/*.zip
+        if-no-files-found: error
+        retention-days: 1
+
+  release:
+    needs: [ build ]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: localhost
+        path: packages
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: l2ini
+        path: packages
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2.1.0
+      with:
+        name: l2ini_userini
+        path: packages
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1.9.0
+      with:
+        allowUpdates: false
+        artifactErrorsFailBuild: true
+        artifacts: packages/*
+        artifactContentType: application/octet-stream
+        body: 'Three prebuilt options to choose from:
+        
+        - **localhost**: Overrides the Auth Gate address to `127.0.0.1`
+        
+        - **l2ini**: Overrides `l2.ini` with `l2_.ini` (you provide `l2_.ini`; Auth Gate address will be taken from `l2_.ini`, regardless of launcher)
+        
+        - **l2ini_userini**: Overrides `l2.ini` with `l2_.ini` and `user.ini` with `user_.ini` (you provide `l2_.ini` and `user_.ini`; Auth Gate address will be taken from l2_.ini, regardless of launcher)
+        
+        
+        Further usage details can be found in the provided `README.md` file.
+        '
+        draft: false
+        generateReleaseNotes: true
+        prerelease: false
